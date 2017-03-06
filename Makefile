@@ -13,10 +13,10 @@ $(GIT_HOOKS):
 
 default: $(GIT_HOOKS) computepi.o
 	$(CC) $(CFLAGS) computepi.o time_test.c -DBASELINE -o time_test_baseline
-	$(CC) $(CFLAGS) computepi.o time_test.c -DOPENMP_2 -o time_test_openmp_2
-	$(CC) $(CFLAGS) computepi.o time_test.c -DOPENMP_4 -o time_test_openmp_4
-	$(CC) $(CFLAGS) computepi.o time_test.c -DAVX -o time_test_avx
-	$(CC) $(CFLAGS) computepi.o time_test.c -DAVXUNROLL -o time_test_avxunroll
+#	$(CC) $(CFLAGS) computepi.o time_test.c -DOPENMP_2 -o time_test_openmp_2
+#	$(CC) $(CFLAGS) computepi.o time_test.c -DOPENMP_4 -o time_test_openmp_4
+#	$(CC) $(CFLAGS) computepi.o time_test.c -DAVX -o time_test_avx
+#	$(CC) $(CFLAGS) computepi.o time_test.c -DAVXUNROLL -o time_test_avxunroll
 	$(CC) $(CFLAGS) computepi.o benchmark_clock_gettime.c -o benchmark_clock_gettime
 
 .PHONY: clean default
@@ -26,10 +26,10 @@ default: $(GIT_HOOKS) computepi.o
 
 check: default
 	time ./time_test_baseline
-	time ./time_test_openmp_2
-	time ./time_test_openmp_4
-	time ./time_test_avx
-	time ./time_test_avxunroll
+#	time ./time_test_openmp_2
+#	time ./time_test_openmp_4
+#	time ./time_test_avx
+#	time ./time_test_avxunroll
 
 gencsv: default
 	for i in `seq 100 5000 25000`; do \
