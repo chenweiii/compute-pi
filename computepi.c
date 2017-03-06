@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <immintrin.h>
 #include <omp.h>
+#include <pthread.h>
 #include "computepi.h"
 
 double compute_pi_baseline(size_t N)
@@ -14,6 +15,38 @@ double compute_pi_baseline(size_t N)
     return pi * 4.0;
 }
 
+double compute_pi_pthread(size_t N, int NUM_THREADS)
+{
+    double pi = 0.0;
+    pthread_t *threads = (pthread_t *) malloc(sizeof(pthread_t) * NUM_THREADS);
+    pitem *pitem_array = (pitem *) malloc(sizeof(pitem) * NUM_THREADS);
+    for (int i = 0; i < NUM_THREADS; i++) {
+        pitem_array[i].from = i * (N / NUM_THREADS);
+        pitem_array[i].to = (i + 1) * (N / NUM_THREADS);
+        pitem_array[i].N = N;
+        pitem_array[i].result = (double *) malloc(sizeof(double));
+        pthread_create(&threads[i], NULL, piThread, (void *) &pitem_array[i]);
+    }
+    for (int i = 0; i < NUM_THREADS; i++) {
+        pthread_join(threads[i], NULL);
+        pi += *(pitem_array[i].result);
+    }
+    return pi * 4;
+}
+
+void *piThread(void *pitem_array)
+{
+    pitem *piInfo = (pitem *) pitem_array;
+    double pi = 0.0;
+    double dt = 1.0 / piInfo->N;
+    for (int i = piInfo->from; i < piInfo->to; i++) {
+        double x = (double) i / piInfo->N;
+        pi += dt / (1.0 + x * x);
+    }
+    *(piInfo->result) = pi;
+    pthread_exit(NULL);
+}
+/*
 double compute_pi_openmp(size_t N, int threads)
 {
     double pi = 0.0;
@@ -117,3 +150,4 @@ double compute_pi_avx_unroll(size_t N)
           tmp4[0] + tmp4[1] + tmp4[2] + tmp4[3];
     return pi * 4.0;
 }
+*/

@@ -2,8 +2,8 @@ CC = gcc
 CFLAGS = -O0 -std=gnu99 -Wall -fopenmp -mavx
 EXECUTABLE = \
 	time_test_baseline time_test_openmp_2 time_test_openmp_4 \
-	time_test_avx time_test_avxunroll \
-	benchmark_clock_gettime
+	time_test_avx time_test_avxunroll time_test_pthread_2 \
+	benchmark_clock_gettime computeConfidenceInterval
 
 GIT_HOOKS := .git/hooks/pre-commit
 
@@ -13,6 +13,7 @@ $(GIT_HOOKS):
 
 default: $(GIT_HOOKS) computepi.o
 	$(CC) $(CFLAGS) computepi.o time_test.c -DBASELINE -o time_test_baseline
+	$(CC) $(CFLAGS) computepi.o time_test.c -DPTHREAD_2 -o time_test_pthread_2
 #	$(CC) $(CFLAGS) computepi.o time_test.c -DOPENMP_2 -o time_test_openmp_2
 #	$(CC) $(CFLAGS) computepi.o time_test.c -DOPENMP_4 -o time_test_openmp_4
 #	$(CC) $(CFLAGS) computepi.o time_test.c -DAVX -o time_test_avx
@@ -26,6 +27,7 @@ default: $(GIT_HOOKS) computepi.o
 
 check: default
 	time ./time_test_baseline
+	time ./time_test_pthread_2
 #	time ./time_test_openmp_2
 #	time ./time_test_openmp_4
 #	time ./time_test_avx
@@ -38,4 +40,4 @@ gencsv: default
 	done > result_clock_gettime.csv	
 
 clean:
-	rm -f $(EXECUTABLE) *.o *.s result_clock_gettime.csv
+	rm -f $(EXECUTABLE) *.o *.s result_clock_gettime.csv *.txt

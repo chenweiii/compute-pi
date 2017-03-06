@@ -10,6 +10,10 @@ int main(int argc, char const *argv[])
     pi = compute_pi_baseline(N);
 #endif
 
+#if defined(PTHREAD_2)
+    pi = compute_pi_pthread(N, 2);
+#endif
+
 #if defined(OPENMP_2)
     pi = compute_pi_openmp(N, 2);
 #endif
